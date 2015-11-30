@@ -122,7 +122,7 @@ def handleKeyDown(state, unicode, key, mod):
     #
     # Quiz: Why do we not have to write: state = funcToRun(state)?
     #
-    funcToRun(state)
+    state = funcToRun(state)
 
     return(state)
 

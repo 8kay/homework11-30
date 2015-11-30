@@ -1,12 +1,14 @@
 import pygame as pg
+import numpy
+
 
 # grayPixel: pixel -> pixel
 # compute and return a gray pixel with the same intensity
 # as the given pixel
 def grayPixel(pixel):
-    red_intensity = pixel[0]
-    green_intensity = pixel[1]
-    blue_intensity = pixel[2]
+    red_intensity = int(pixel[0])
+    green_intensity = int(pixel[1])
+    blue_intensity = int(pixel[2])
     ave_intensity = (red_intensity + green_intensity+ blue_intensity)//3
     return (ave_intensity, ave_intensity, ave_intensity)
 
@@ -28,16 +30,29 @@ def intensify(pixel,quantity):
     return (pixel[0]+quantity, pixel[1]+quantity, pixel[2]+quantity)
 
 def light(pixel):
-    if ((pixel[0] <= 245) or (pixel[1]<=245) or (pixel[2]<= 245)): 
-        return ((pixel[0]+10, pixel[1]+10, pixel[2]+10))
-    else:
-        print("Bad choice, try again")
+    r = numpy.int32(pixel[0] + 10)
+    g = numpy.int32(pixel[1] + 10)
+    b = numpy.int32(pixel[2] + 10)
+    if r > 255:
+        r = 255
+    if g > 255:
+        g = 255
+    if b > 255:
+        b = 255
+    return ((numpy.int8(r), numpy.int8(g), numpy.int8(b)))
+
 
 def dark(pixel):
-    if (pixel[0] >= 10) or (pixel[1] >= 10) or (pixel[2] >= 10):
-        return ((pixel[0]-10, pixel[1]-10, pixel[2]-10))
-    else:
-        print("Bad choice, try again")
+    r = numpy.int32(pixel[0] - 10)
+    g = numpy.int32(pixel[1] - 10)
+    b = numpy.int32(pixel[2] - 10)
+    if r < 0:
+        r = 0
+    if g < 0:
+        g = 0
+    if b < 0:
+        b = 0
+    return ((numpy.int8(r), numpy.int8(g), numpy.int8(b)))
 
 
 def invert(image_surf):
@@ -72,20 +87,6 @@ def bw (image_surf):
 
 
 
-def lighten (image_surf):
-
-    # get pixel dimensions of image
-    rows = image_surf.get_size()[0]
-    cols = image_surf.get_size()[1]
-    
-    # get reference to and lock pixel array
-    pixels3d = pg.surfarray.pixels3d(image_surf)
-
-    # update pixels in place (side effect!)
-    for x in range(rows):
-        for y in range(cols):
-            pixels3d[x,y] = light(pixels3d[x,y])
-
 def darken (image_surf):
 
     # get pixel dimensions of image
@@ -99,3 +100,17 @@ def darken (image_surf):
     for x in range(rows):
         for y in range(cols):
             pixels3d[x,y] = dark(pixels3d[x,y])
+
+def lighten (image_surf):
+
+    # get pixel dimensions of image
+    rows = image_surf.get_size()[0]
+    cols = image_surf.get_size()[1]
+    
+    # get reference to and lock pixel array
+    pixels3d = pg.surfarray.pixels3d(image_surf)
+
+    # update pixels in place (side effect!)
+    for x in range(rows):
+        for y in range(cols):
+            pixels3d[x,y] = light(pixels3d[x,y])
